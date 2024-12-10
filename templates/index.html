@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Countdown Timer</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            /* More readable font */
+            text-align: center;
+            background-color: #f4f4f4;
+            /* Light background */
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        h1 {
+            color: #333;
+            /* Darker header text */
+            margin-bottom: 30px;
+        }
+
+        .timer-container {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            margin-bottom: 20px;
+            width: 300px;
+            /* Added width for better layout */
+            text-align: left;
+            /* Align text to the left inside the container */
+        }
+
+        .timer {
+            font-size: 1.2em;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .timer strong {
+            font-weight: bold;
+        }
+    </style>
+
+</head>
+
+<body>
+
+    <h1>Time before everyday school events</h1>
+
+    <div class="timer-container">
+        <div class="timer" id="lunchTimer"></div>
+    </div>
+    <div class="timer-container">
+        <div class="timer" id="breakTimer"></div>
+    </div>
+    <div class="timer-container">
+        <div class="timer" id="dismissalTimer"></div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.4/moment.min.js"></script>
+    <script>
+        // Times are in HH:mm (24-hour format)
+        const eventTimes = [
+            //Lunch, Break, Dismissal
+            [
+                ['12:54', '10:03', '15:08'], // Sun
+                ['12:54', '10:03', '15:08'], // Mon
+                ['12:12', '09:48', '14:08'], // Tue
+                ['12:54', '10:03', '15:08'], // Wed
+                ['12:54', '10:03', '15:08'], // Thu
+                ['12:54', '10:03', '15:08'], // Fri
+                ['12:54', '10:03', '15:08'] // Sat
+            ],
+            // Add more weeks here as needed...
+        ];
+
+
+        function updateTimers() {
+
+
+            const now = moment();
+            const dayOfWeek = now.day(); // 0 = Sunday, 1 = Monday, etc.
+            const weekNumber = 0 // Math.floor(now.week() / 52); //Assumes events repeat every two weeks
+
+            const [lunchTime, breakTime, dismissalTime] = eventTimes[weekNumber][dayOfWeek];
+
+            const lunchMoment = moment(lunchTime, 'HH:mm');
+            const breakMoment = moment(breakTime, 'HH:mm');
+            const dismissalMoment = moment(dismissalTime, 'HH:mm');
+
+
+            //Adjust for today's date
+            lunchMoment.date(now.date());
+            breakMoment.date(now.date());
+            dismissalMoment.date(now.date());
+
+            let islunch = lunchMoment.isBefore(now)
+            let isbreak = breakMoment.isBefore(now)
+            let isdismissal = dismissalMoment.isBefore(now)
+
+            //moment.relativeTimeThreshold('h', 24);
+            moment.relativeTimeThreshold('m', 1440);
+            //moment.relativeTimeThreshold('s', 84600);
+
+
+            document.getElementById('lunchTimer').innerText = 'Lunch: ' + lunchMoment.fromNow();
+            document.getElementById('breakTimer').innerText = 'Nutrition: ' + breakMoment.fromNow();
+            document.getElementById('dismissalTimer').innerText = 'Dismissal: ' + dismissalMoment.fromNow();
+
+            //If the event has already happened today, add a day
+            if (lunchMoment.isBefore(now)) document.getElementById('lunchTimer').innerText = 'There is no lunch today anymore';
+            if (breakMoment.isBefore(now)) document.getElementById('breakTimer').innerText = 'There is no nutrition today anymore';
+            if (dismissalMoment.isBefore(now)) document.getElementById('dismissalTimer').innerText = 'School is ended already!';
+        }
+
+        setInterval(updateTimers, 500); // Update every second
+        updateTimers(); // Initial update
+    </script>
+
+</body>
+
+</html>
